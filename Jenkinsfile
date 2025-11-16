@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout Git') {
             steps {
                 git{
-                    url: 'https://github.com/yessinecss9-svg/yessinejmal-4sae4.git', // CORRIGE
+                    url: 'https://github.com/yessinecss9-svg/yessinejmal-4sae4.git',
                     credentialsId: 'github-credentials',
                     branch: 'master'
                 }
@@ -15,7 +15,7 @@ pipeline {
         stage('Build with Maven') {
             steps {
                 dir('.') {
-                    sh 'mvn clean package -DskipTests' // CORRIGE: mvn pas mwn
+                    sh 'mvn clean package -DskipTests'
                 }
             }
         }
@@ -32,7 +32,7 @@ pipeline {
             echo '✅ Build Spring Boot successful!'
         }
         failure {
-            echo '❌ Build failed!'; // CORRIGE: ; pas :
+            echo '❌ Build failed!'
         }
     }
 }
