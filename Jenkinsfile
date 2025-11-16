@@ -14,9 +14,9 @@ pipeline {
         
         stage('Build with Maven') {
             steps {
-                dir('.') {  // ⬅️ AJOUTEZ CETTE LIGNE
+                dir('.') {  
                     sh 'mvn clean package -DskipTests'
-                }           // ⬅️ ET CETTE LIGNE
+                }           
             }
         }
         
@@ -29,10 +29,10 @@ pipeline {
     
     post {
         success {
-            echo '✅ Build Spring Boot successful!'
+            echo ' Build Spring Boot successful!'
         }
         failure {
-            echo '❌ Build failed!'
+            echo ' Build failed!'
         }
     }
 }
