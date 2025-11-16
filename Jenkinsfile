@@ -4,19 +4,17 @@ pipeline {
     stages {
         stage('Checkout Git') {
             steps {
-                git{
+                git(
                     url: 'https://github.com/yessinecss9-svg/yessinejmal-4sae4.git',
                     credentialsId: 'github-credentials',
                     branch: 'master'
-                }
+                )
             }
         }
         
         stage('Build with Maven') {
             steps {
-                dir('.') {
-                    sh 'mvn clean package -DskipTests'
-                }
+                sh 'mvn clean package -DskipTests'
             }
         }
         
