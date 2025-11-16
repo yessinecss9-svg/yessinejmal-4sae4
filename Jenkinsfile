@@ -1,10 +1,11 @@
 pipeline {
     agent any
     
-    tools {
-        maven 'M3'
-        jdk 'jdk17'
-    }
+    // ⚠️ SUPPRIMEZ TOUTE CETTE SECTION :
+    // tools {
+    //     maven 'M3'
+    //     jdk 'jdk17'
+    // }
     
     stages {
         stage('Checkout Git') {
@@ -32,10 +33,10 @@ pipeline {
     
     post {
         success {
-            echo '✅ Build Spring Boot successful! JAR file created.'
+            echo '✅ Build Spring Boot successful!'
         }
         failure {
-            echo '❌ Build failed! Check console output.'
+            echo '❌ Build failed!'
         }
     }
 }
