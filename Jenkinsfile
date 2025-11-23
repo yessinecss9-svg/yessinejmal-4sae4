@@ -1,50 +1,26 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKER_IMAGE = 'votredockerhub/nom-du-projet:latest'
-        DOCKER_CREDENTIALS = 'docker-hub-credentials'
+        DOCKER_IMAGE = 'yessinejmal/tp-foyer-app:latest'
     }
-    
+
     stages {
-        // Vos stages existants
-        stage('Git Checkout') {
+        stage('Checkout Git') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/votrecommande/votreprojet.git',
+                git branch: 'master', 
+                url: 'https://github.com/yessinecss9-svg/yessinejmal-4sae4.git',
                 credentialsId: 'github-credentials'
             }
         }
-        
-        stage('Build') {
+
+        stage('Build with Maven') {
             steps {
-                sh 'mvn clean compile'  // Adaptez selon votre projet
+                sh 'mvn clean package -DskipTests'
             }
         }
-        
-        stage('Test') {
-            steps {
-                sh 'mvn test'  // Adaptez selon votre projet
-            }
-        }
-        
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh 'mvn sonar:sonar'
-                }
-            }
-        }
-        
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
-        
-        // NOUVEAUX STAGES DOCKER
+
+        // NOUVEAU STAGE : Build Docker Image
         stage('Build Docker Image') {
             steps {
                 script {
@@ -52,25 +28,31 @@ pipeline {
                 }
             }
         }
-        
-        stage('Push to Docker Hub') {
+
+        // NOUVEAU STAGE : Push Docker Image
+        stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
                         docker.image("${DOCKER_IMAGE}").push()
                     }
                 }
             }
         }
+
+        stage('Archive Artifact') {
+            steps {
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
     }
-    
+
     post {
-        always {
-            emailext (
-                subject: "Build ${currentBuild.result}: Job ${env.JOB_NAME}",
-                body: "Détails: ${env.BUILD_URL}",
-                to: "votre@email.com"
-            )
+        success {
+            echo '✅ Build successful! Docker image pushed to Docker Hub'
+        }
+        failure {
+            echo '❌ Build failed!'
         }
     }
 }
