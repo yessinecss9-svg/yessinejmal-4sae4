@@ -1,5 +1,10 @@
-pipeline {
+﻿pipeline {
     agent any
+    
+    environment {
+        DOCKER_IMAGE = 'yessinejmal/tp-foyer-app'
+        DOCKER_TAG = ""
+    }
     
     stages {
         stage('Checkout Git') {
@@ -18,6 +23,26 @@ pipeline {
             }
         }
         
+        // NOUVEAU STAGE : Build Docker Image
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build(":")
+                }
+            }
+        }
+        
+        // NOUVEAU STAGE : Push Docker Image
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub-credentials') {
+                        docker.image(":").push()
+                    }
+                }
+            }
+        }
+        
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
@@ -27,7 +52,7 @@ pipeline {
     
     post {
         success {
-            echo '✅ Build Spring Boot successful!'
+            echo '✅ Build successful! Docker image pushed to Docker Hub'
         }
         failure {
             echo '❌ Build failed!'
